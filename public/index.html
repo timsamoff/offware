@@ -9,7 +9,10 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>offware</title>
+<title>offWare = "Different thinking. Useful things.";</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200;700&display=swap" rel="stylesheet">
 <style>
 html, body { height: 100%; margin: 0; }
 body {
@@ -18,12 +21,68 @@ body {
   justify-content: center;
   background: #fff;
   color: #000;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 2rem;
+  font-family: "Source Code Pro", ui-monospace, Consolas, monospace;
+  font-weight: 200;
+  font-size: clamp(0.6rem, 3.6vw, 2rem);
+}
+p { margin: 0; white-space: nowrap; }
+b { font-weight: 700; }
+.note { display: block; color: #767676; }
+.br, .ind { display: none; }
+@media (max-width: 600px) {
+  body { font-size: clamp(0.6rem, 4.8vw, 2rem); }
+  .br { display: block; }
+  .ind { display: inline-block; width: 11ch; }
 }
 </style>
 </head>
 <body>
-offware
+<p id="line"><span class="note">// Welcome</span><b>offWare</b> = "Different thinking. <span class="br"></span><span class="ind"></span>Useful things.";</p>
+<script>
+(function () {
+  var line = document.getElementById('line');
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Wrap every character in a span so the full line keeps its final size
+  // and position while the characters are revealed one at a time.
+  var chars = [];
+  (function wrap(node) {
+    Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+      if (child.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        child.nodeValue.split('').forEach(function (ch) {
+          var s = document.createElement('span');
+          s.textContent = ch;
+          s.style.visibility = 'hidden';
+          chars.push(s);
+          frag.appendChild(s);
+        });
+        node.replaceChild(frag, child);
+      } else {
+        wrap(child);
+      }
+    });
+  })(line);
+
+  var i = 0;
+  function type() {
+    if (i >= chars.length) return;
+    chars[i++].style.visibility = 'visible';
+    setTimeout(type, 55 + Math.random() * 70);
+  }
+
+  var started = false;
+  function start() { if (!started) { started = true; setTimeout(type, 400); } }
+  if (document.fonts && document.fonts.load) {
+    Promise.all([
+      document.fonts.load('700 1em "Source Code Pro"'),
+      document.fonts.load('200 1em "Source Code Pro"')
+    ]).then(start, start);
+    setTimeout(start, 2000);
+  } else {
+    start();
+  }
+})();
+</script>
 </body>
 </html>
